@@ -24,21 +24,21 @@ namespace SpawnTool
         private int _shellOwnerId;
         private int _emID;
         private int _subID;
-        private uint _lastStage;
         private NativeFunction<MtObject, int, int, bool, nint> _specialSummon = new(0x141a5a3e0);
-        public void OnMonsterCreate(Monster monster)
-        {
-            uint stageID = (uint)Area.CurrentStage;
-            _lastStage = stageID;
+        private uint _lastStage;
+        public void OnMonsterCreate(Monster monster) { uint stageID = (uint)Area.CurrentStage; _lastStage = stageID; }
+        public void OnUpdate(float dt) 
+        { 
+            if ((uint)Area.CurrentStage != _lastStage)  { 
+                _shellOwner = null; 
+            } 
         }
-
-        public void OnUpdate(float dt)
-        {
-            if ((uint)Area.CurrentStage != _lastStage)
-            {
-                _shellOwner = null;
-            }
-        }
+        public void OnQuestLeave(int questId) { _shellOwner = null; }
+        public void OnQuestComplete(int questId) { _shellOwner = null; }
+        public void OnQuestFail(int questId) { _shellOwner = null; }
+        public void OnQuestReturn(int questId) { _shellOwner = null; }
+        public void OnQuestAbandon(int questId) { _shellOwner = null; }
+        public void OnQuestEnter(int questId) { _shellOwner = null; }
         public unsafe void OnImGuiRender()
         {
             var player = Player.MainPlayer; if (player == null) return;
