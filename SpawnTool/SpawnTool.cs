@@ -26,7 +26,10 @@ namespace SpawnTool
         private int _subID;
         private NativeFunction<MtObject, int, int, bool, nint> _specialSummon = new(0x141a5a3e0);
         private uint _lastStage;
-        public void OnMonsterCreate(Monster monster) { uint stageID = (uint)Area.CurrentStage; _lastStage = stageID; }
+        public void OnMonsterCreate(Monster monster) 
+        {
+            _lastStage = (uint)Area.CurrentStage; 
+        }
         public void OnUpdate(float dt) 
         { 
             if ((uint)Area.CurrentStage != _lastStage)  { 
