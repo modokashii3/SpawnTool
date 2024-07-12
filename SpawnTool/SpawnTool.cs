@@ -56,7 +56,7 @@ namespace SpawnTool
                 _specialSummon.Invoke(Monster.SingletonInstance, _emID, _subID, true);
             }
 
-            var allMonsters = Monster.GetAllMonsters().ToArray();
+            var allMonsters = Monster.GetAllMonsters().TakeLast(8).ToArray();
 
 
             if (ImGui.BeginCombo("Shell Owner", $"{_shellOwner}"))
