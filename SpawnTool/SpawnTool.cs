@@ -17,7 +17,7 @@ namespace SpawnTool
         }
 
         private int _shellInt32;
-        private Monster? _shellOwner;
+        private Monster? _shellOwner = null;
         private bool _shellMode = false;
         private bool _wasHiding = false;
         private bool _wasPaused = false;
