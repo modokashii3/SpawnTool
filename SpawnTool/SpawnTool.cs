@@ -25,11 +25,7 @@ namespace SpawnTool
         private int _emID;
         private int _subID;
         private NativeFunction<MtObject, int, int, bool, nint> _specialSummon = new(0x141a5a3e0);
-        private uint _lastStage;
-        public void OnMonsterCreate(Monster monster) 
-        {
-            _lastStage = (uint)Area.CurrentStage; 
-        }
+        private uint _lastStage = 0;
         public void OnUpdate(float dt) 
         { 
             if ((uint)Area.CurrentStage != _lastStage)  { 
@@ -46,31 +42,49 @@ namespace SpawnTool
         {
             var player = Player.MainPlayer; if (player == null) return;
 
+            ImGui.PushItemWidth(50.0f);
             int emID = _emID;
             if (ImGui.InputScalar("emID", ImGuiDataType.S32, new IntPtr(Unsafe.AsPointer(ref emID)))) { _emID = emID; }
-            int subID = _subID;
-            if (ImGui.InputScalar("subID", ImGuiDataType.S32, new IntPtr(Unsafe.AsPointer(ref subID)))) { _subID = subID; }
+            ImGui.PopItemWidth();
 
-            if (ImGui.Button("Special Summon"))
+            //int subID = _subID;
+            int subID = _subID;
+            _subID = 0;
+            //if (ImGui.InputScalar("subID", ImGuiDataType.S32, new IntPtr(Unsafe.AsPointer(ref subID)))) { _subID = subID; }
+            
+            ImGui.SameLine();
+            if (ImGui.Button("Summon"))
             {
                 _specialSummon.Invoke(Monster.SingletonInstance, _emID, _subID, true);
             }
 
+            ImGui.SameLine();
+            if (ImGui.Button("Unset"))
+            {
+                _shellOwner = null;
+            }
+
             var allMonsters = Monster.GetAllMonsters().TakeLast(8).ToArray();
-
-
-            if (ImGui.BeginCombo("Shell Owner", $"{_shellOwner}"))
+            ImGui.SameLine();
+            ImGui.PushItemWidth(100.0f);
+            if (ImGui.BeginCombo("Mon", $"{_shellOwner}"))
             {
                 foreach (var shellOwner in allMonsters)
                 {
                     if (ImGui.Selectable($"{shellOwner}", _shellOwner == shellOwner))
                     {
                         _shellOwner = shellOwner;
+                        _lastStage = (uint)Area.CurrentStage;
                     }
                 }
                 ImGui.EndCombo();
             }
+            ImGui.PopItemWidth();
+
+            
             if (_shellOwner is null) return;
+
+            ImGui.SameLine();
             if (ImGui.Button("Hide"))
             {
                 if (!_wasHiding)
@@ -78,7 +92,9 @@ namespace SpawnTool
                 else
                 { _shellOwner.Resize(1f); _wasHiding = false; }
             }
-            if (ImGui.Button("FreezeIt"))
+
+            ImGui.SameLine();
+            if (ImGui.Button("Freeze"))
             {
                 if (!_wasPaused)
                 { _shellOwner.PauseAnimations(); _wasPaused = true; }
@@ -99,6 +115,7 @@ namespace SpawnTool
                 }*/
 
                 int shellInt32 = _shellInt32;
+                ImGui.PushItemWidth(60.0f);
                 if (ImGui.InputScalar("Shell Index", ImGuiDataType.S32, new IntPtr(Unsafe.AsPointer(ref shellInt32))))
                 {
                     /*if (shellInt32 < 0)
@@ -111,12 +128,13 @@ namespace SpawnTool
                     }*/
                     _shellInt32 = shellInt32;
                 }
+                ImGui.PopItemWidth();
 
-                if (ImGui.Button("Toggle ShellKey"))
+                ImGui.SameLine();
+                if (ImGui.Button("Toggle P"))
                 {
                     if (!_shellMode) { _shellMode = true; } else { _shellMode = false; }
                 }
-
                 /*
                 if (_shellParamList == null) return;
                 if (_shellInt32 >= 0 && _shellInt32 < _shellParamList.ShellCount)
@@ -139,7 +157,7 @@ namespace SpawnTool
                 if (player == null) return;
                 if (_shellOwner != null && _shellMode && Input.IsPressed(Key.P))
                 {
-                    _shellOwner.CreateShell(_shellOwnerId, _shellInt32, player.Position, _shellOwner.Position);
+                    _shellOwner.CreateShell(_shellOwnerId, _shellInt32, _shellOwner.Position, player.Position);
                     Log.Info($"Shell Create");
                 }
             }
