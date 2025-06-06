@@ -21,10 +21,10 @@ namespace SpawnTool
         private bool _shellMode = false;
         private bool _wasHiding = false;
         private bool _wasPaused = false;
-        private int _shellOwnerId;
+        // private int _shellOwnerId;
         private int _emID;
         private int _subID;
-        private NativeFunction<MtObject, int, int, bool, nint> _specialSummon = new(0x141a5a3e0);
+        private NativeFunction<MtObject, int, int, bool, nint> _specialSummon = new(0x141a5b0b0); //  0x141a5a3e0 in ver15.21
         private uint _lastStage = 0;
         public void OnUpdate(float dt) 
         { 
@@ -42,16 +42,22 @@ namespace SpawnTool
         {
             var player = Player.MainPlayer; if (player == null) return;
 
-            ImGui.PushItemWidth(50.0f);
+            
             int emID = _emID;
-            if (ImGui.InputScalar("emID", ImGuiDataType.S32, new IntPtr(Unsafe.AsPointer(ref emID)))) { _emID = emID; }
+            ImGui.PushItemWidth(100.0f);
+            ImGui.InputInt("emID", ref _emID);
+            ImGui.PopItemWidth();
+            // if (ImGui.InputScalar("emID", ImGuiDataType.S32, new IntPtr(Unsafe.AsPointer(ref emID)))) { _emID = emID; }
+
+            ImGui.SameLine();
+            ImGui.PushItemWidth(100.0f);
+            int subID = _subID;
+            ImGui.InputInt("subID", ref _subID);
             ImGui.PopItemWidth();
 
-            //int subID = _subID;
-            int subID = _subID;
-            _subID = 0;
-            //if (ImGui.InputScalar("subID", ImGuiDataType.S32, new IntPtr(Unsafe.AsPointer(ref subID)))) { _subID = subID; }
-            
+            // _subID = 0;
+            // if (ImGui.InputScalar("subID", ImGuiDataType.S32, new IntPtr(Unsafe.AsPointer(ref subID)))) { _subID = subID; }
+
             ImGui.SameLine();
             if (ImGui.Button("Summon"))
             {
@@ -104,7 +110,7 @@ namespace SpawnTool
 
             if (_shellOwner != null)
             {
-                int shellOwnerId = (int)_shellOwner.Type; // Convert shellOwner Type to int }
+                // int shellOwnerId = (int)_shellOwner.Type; // Convert shellOwner Type to int }
 
                 /*
                 if (_shellParamList == null) return;
@@ -114,21 +120,27 @@ namespace SpawnTool
                     _shellParamList = shellParamList;
                 }*/
 
+                ImGui.PushItemWidth(100.0f);
+                ImGui.InputInt("shellInt", ref _shellInt32);
+                ImGui.PopItemWidth();
+
+                /*
                 int shellInt32 = _shellInt32;
                 ImGui.PushItemWidth(60.0f);
                 if (ImGui.InputScalar("Shell Index", ImGuiDataType.S32, new IntPtr(Unsafe.AsPointer(ref shellInt32))))
                 {
-                    /*if (shellInt32 < 0)
+                    if (shellInt32 < 0)
                     {
                         shellInt32 = 0;
                     }
                     else if (shellInt32 >= _shellParamList.ShellCount)
                     {
                         shellInt32 = _shellParamList.ShellCount - 1;
-                    }*/
+                    }
                     _shellInt32 = shellInt32;
                 }
                 ImGui.PopItemWidth();
+                */
 
                 ImGui.SameLine();
                 if (ImGui.Button("Toggle P"))
@@ -157,7 +169,7 @@ namespace SpawnTool
                 if (player == null) return;
                 if (_shellOwner != null && _shellMode && Input.IsPressed(Key.P))
                 {
-                    _shellOwner.CreateShell(_shellOwnerId, _shellInt32, _shellOwner.Position, player.Position);
+                    _shellOwner.CreateShell(0, _shellInt32, _shellOwner.Position, player.Position);
                     Log.Info($"Shell Create");
                 }
             }
